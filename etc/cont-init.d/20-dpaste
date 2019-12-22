@@ -1,23 +1,19 @@
-#!/bin/ash
+#!/usr/bin/with-contenv /bin/sh
 
-LOCAL_SETTINGS="/app/dpaste/settings/local.py"
-SQLITE_NAME="db/dpaste.sqlite"
+LOCAL_SETTINGS="${APP_PATH}/dpaste/settings/local.py"
+SQLITE_NAME="${APP_PATH}/db/dpaste.sqlite"
 
-# default to debugging enabled
-# there's some problem with dpaste.css and dpaste.js staticinline files when
-# debugging is disabled, this default can be removed once that problem is resolved
-debug_state=True
+# default to debugging disabled
+DEBUG=False
 
 if [ ! -z ${DEBUG+set} ]; then
 	case $DEBUG in
 		true|True|yes|on)
-			debug_state=True
-			;;
-		false|False|no|off)
-			debug_state=False
+			DEBUG=True
 			;;
 	esac
 fi
+sed -E -i "s/(DEBUG\s*=\s*)(.*)$/\1${DEBUG}/" $LOCAL_SETTINGS
 
 ad_name="none"
 ad_email="none@nowhere.com"
@@ -31,15 +27,6 @@ if [ ! -z ${ADMIN_EMAIL} ]; then
 fi
 
 sed -E -i "/ADMINS\s*=\s*\(/a \    ('${ad_name}', '${ad_email}')," $LOCAL_SETTINGS
-
-case $debug_state in
-	True)
-		echo "DEBUG = True" >> $LOCAL_SETTINGS
-            ;;
-	False)
-		sed -E -i "/^[[:blank:]]*DEBUG[[:blank:]]*=[[:blank:]]*\S*[[:blank:]]*$/d" $LOCAL_SETTINGS
-		;;
-esac
 
 if [ ! -z ${DB_TYPE+set} ]; then
 	# remove existing settings
@@ -80,10 +67,5 @@ if [ ! -z ${SECRET_KEY+set} ]; then
     sed -E -i "s/(SECRET_KEY\s*=\s*')(\S*)(')/\1$SECRET_KEY\3/" $LOCAL_SETTINGS
 fi
 
-python3 ./manage.py makemigrations
-python3 ./manage.py migrate
-
-/usr/bin/crontab /app/crontab
-/usr/sbin/crond -b -l 8
-
-exec "$@"
+python3 ./manage.py makemigrations --noinput
+python3 ./manage.py migrate --noinput

@@ -1,0 +1,16 @@
+#!/usr/bin/with-contenv /bin/sh
+
+INCLUDE_INI="/etc/uwsgi-dpaste.ini"
+
+cat << EOF >> "${INCLUDE_INI}"
+[uwsgi]
+
+chdir           = ${APP_PATH}
+module          = dpaste.wsgi
+home            = ${VIRTUAL_ENV}
+
+binary-path     = ${VIRTUAL_ENV}/bin/python3
+check-static    = ${APP_PATH}/.static
+
+virtualenv      = ${VIRTUAL_ENV}/lib/python${PYTHON_VERSION}/site-packages
+EOF

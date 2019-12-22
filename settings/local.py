@@ -39,3 +39,5 @@ class ProductionDpasteAppConfig(dpasteAppConfig):
 
 INSTALLED_APPS.remove('dpaste.apps.dpasteAppConfig')
 INSTALLED_APPS.append('dpaste.settings.local.ProductionDpasteAppConfig')
+
+DEBUG = False
