@@ -1,6 +1,6 @@
 ARG ALPINE_VERSION=3.10.3
 ARG PYTHON_VERSION=3.7
-ARG DPASTE_VERSION=3.4
+ARG DPASTE_VERSION=3.5
 
 ARG APP_PATH=/app
 ARG VIRTUAL_ENV=${APP_PATH}/venv
@@ -104,23 +104,25 @@ ARG PYTHON_VERSION
 ARG VIRTUAL_ENV
 ARG APP_PATH
 
-ENV VIRTUAL_ENV="${VIRTUAL_ENV}" \
-	APP_PATH="${APP_PATH}" \
-	PYTHON_VERSION="${PYTHON_VERSION}" \
-	PATH="${VIRTUAL_ENV}/bin:$PATH" \
-	PYTHONPATH="${VIRTUAL_ENV}/lib/python${PYTHON_VERSION}/site-packages/" \
-	PYTHONDONTWRITEBYTECODE=1 \
-	PYTHONUNBUFFERED=1
+ENV PATH="${VIRTUAL_ENV}/bin:$PATH"
 
 WORKDIR ${APP_PATH}
 
 COPY --from=builder ${APP_PATH}/ ./
 COPY ./etc /etc
 
-RUN apk add --no-cache \
+RUN	add-contenv \
+		APP_PATH=${APP_PATH} \
+		PYTHON_VERSION=${PYTHON_VERSION} \
+		VIRTUAL_ENV=${VIRTUAL_ENV} \
+		PYTHONPATH=${VIRTUAL_ENV}/lib/python${PYTHON_VERSION}/site-packages/ \
+		PYTHONDONTWRITEBYTECODE=1 \
+		PYTHONUNBUFFERED=1\
+	&& apk add --no-cache \
 		python3=~${PYTHON_VERSION} \
 		mariadb-connector-c-dev \
 		mailcap \
+	&& source /etc/contenv_extra \
 	&& python3 ./manage.py collectstatic --noinput
 
 ENTRYPOINT ["/init"]
