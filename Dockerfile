@@ -1,5 +1,5 @@
-ARG ALPINE_VERSION=3.10.3
-ARG PYTHON_VERSION=3.7
+ARG ALPINE_VERSION=3.11.6
+ARG PYTHON_VERSION=3.8
 ARG DPASTE_VERSION=3.5
 
 ARG APP_PATH=/app
@@ -7,7 +7,7 @@ ARG VIRTUAL_ENV=${APP_PATH}/venv
 
 # get the source code
 #
-FROM alpine:$ALPINE_VERSION as source
+FROM moonbuggy2000/fetcher:latest as source
 
 ARG DPASTE_VERSION
 ARG APP_PATH
@@ -31,8 +31,7 @@ ENV REMOVE_FILES=".dockerignore \
 
 WORKDIR ${APP_PATH}
 
-RUN apk add --no-cache curl \
-	&& curl -o dpaste.tar.gz -L https://github.com/bartTC/dpaste/archive/v${DPASTE_VERSION}.tar.gz \
+RUN wget -qO dpaste.tar.gz https://api.github.com/repos/bartTC/dpaste/tarball/v${DPASTE_VERSION#v*} \
 	&& tar -xf dpaste.tar.gz --strip-components 1 \
 	&& rm -f dpaste.tar.gz \
 	&& for dep in $EXCLUDE_MODS; do \
@@ -84,7 +83,9 @@ WORKDIR ${APP_PATH}
 
 RUN python3 -m venv $VIRTUAL_ENV \
 	&& pip install --no-cache-dir --upgrade pip \
-	&& pip install --no-cache-dir django==2.2.9 mysqlclient
+	&& pip install --no-cache-dir wheel django==2.2.9 mysqlclient
+
+RUN set -x && which pip && which pip3
 
 COPY --from=staticfiles ${APP_PATH} ${APP_PATH}/
 COPY --from=source ${APP_PATH}/ ./

@@ -43,29 +43,12 @@ if [ ! -z ${DB_TYPE+set} ]; then
 	sed -E -i "s/('ENGINE':\s+'django\.db\.backends\.)(\w*)(',)/\1$db_type\3/" $LOCAL_SETTINGS
 fi
 
-if [ ! -z ${DB_NAME+set} ]; then
-	sed -E -i "/('ENGINE':\s+'django\.db\.backends\.)(\w*)(',)/a \	'NAME': '$DB_NAME'," $LOCAL_SETTINGS
-fi
-
-if [ ! -z ${DB_HOST+set} ]; then
-	sed -E -i "/('ENGINE':\s+'django\.db\.backends\.)(\w*)(',)/a \	'HOST': '$DB_HOST'," $LOCAL_SETTINGS
-fi
-
-if [ ! -z ${DB_USER+set} ]; then
-	sed -E -i "/('ENGINE':\s+'django\.db\.backends\.)(\w*)(',)/a \	'USER': '$DB_USER'," $LOCAL_SETTINGS
-fi
-
-if [ ! -z ${DB_PASSWORD+set} ]; then
-	sed -E -i "/('ENGINE':\s+'django\.db\.backends\.)(\w*)(',)/a \	'PASSWORD': '$DB_PASSWORD'," $LOCAL_SETTINGS
-fi
-
-if [ ! -z ${EXPIRE_DEFAULT+set} ]; then
-    sed -E -i "s/(EXPIRE_DEFAULT\s*=\s*)(.*)$/\1$EXPIRE_DEFAULT/" $LOCAL_SETTINGS
-fi
-
-if [ ! -z ${SECRET_KEY+set} ]; then
-    sed -E -i "s/(SECRET_KEY\s*=\s*')(\S*)(')/\1$SECRET_KEY\3/" $LOCAL_SETTINGS
-fi
+[ ! -z ${DB_NAME+set} ] && sed -E -i "/('ENGINE':\s+'django\.db\.backends\.)(\w*)(',)/a \	'NAME': '$DB_NAME'," $LOCAL_SETTINGS
+[ ! -z ${DB_HOST+set} ] && sed -E -i "/('ENGINE':\s+'django\.db\.backends\.)(\w*)(',)/a \	'HOST': '$DB_HOST'," $LOCAL_SETTINGS
+[ ! -z ${DB_USER+set} ] && sed -E -i "/('ENGINE':\s+'django\.db\.backends\.)(\w*)(',)/a \	'USER': '$DB_USER'," $LOCAL_SETTINGS
+[ ! -z ${DB_PASSWORD+set} ] && sed -E -i "/('ENGINE':\s+'django\.db\.backends\.)(\w*)(',)/a \	'PASSWORD': '$DB_PASSWORD'," $LOCAL_SETTINGS
+[ ! -z ${EXPIRE_DEFAULT+set} ] && sed -E -i "s/(EXPIRE_DEFAULT\s*=\s*)(.*)$/\1$EXPIRE_DEFAULT/" $LOCAL_SETTINGS
+[ ! -z ${SECRET_KEY+set} ] && sed -E -i "s/(SECRET_KEY\s*=\s*')(\S*)(')/\1$SECRET_KEY\3/" $LOCAL_SETTINGS
 
 python3 ./manage.py makemigrations --noinput
 python3 ./manage.py migrate --noinput

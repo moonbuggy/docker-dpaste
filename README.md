@@ -13,7 +13,7 @@ docker run --name dpaste -d -p 8080:8080 moonbuggy2000/dpaste
 Environment variables can be specified with the `-e` flag or in `docker-compose.yml`. Available environment variables are:
 
 * ``DB_TYPE``        - accepts `sqlite` (default), `mysql` or `postgres`
-* ``DB_HOST``        - databse server hostname or IP
+* ``DB_HOST``        - database server hostname or IP
 * ``DB_NAME``        - database name
 * ``DB_USER``        - database user name
 * ``DB_PASSWORD``    - database user password
