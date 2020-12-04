@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+. hooks/env
+
+arg_string=''
+
+[ ! -z "${DPASTE_VERSION}" ] && arg_string="${arg_string} --build-arg DPASTE_VERSION=${DPASTE_VERSION}"
+[ ! -z "${DPASTE_TARBALL}" ] && arg_string="${arg_string} --build-arg DPASTE_TARBALL=${DPASTE_TARBALL}"
+
+build_cmd=(docker build ${arg_string} -t ${IMAGE_NAME} .)
+
+printf '\n---\n%s\n---\n\n' "${build_cmd[*]}"
+"${build_cmd[@]}"

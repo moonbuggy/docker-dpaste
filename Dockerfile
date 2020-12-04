@@ -1,6 +1,7 @@
 ARG ALPINE_VERSION=3.11.6
 ARG PYTHON_VERSION=3.8
 ARG DPASTE_VERSION=3.5
+ARG DPASTE_TARBALL="https://api.github.com/repos/bartTC/dpaste/tarball/v${DPASTE_VERSION}"
 
 ARG APP_PATH=/app
 ARG VIRTUAL_ENV=${APP_PATH}/venv
@@ -9,7 +10,7 @@ ARG VIRTUAL_ENV=${APP_PATH}/venv
 #
 FROM moonbuggy2000/fetcher:latest as source
 
-ARG DPASTE_VERSION
+ARG DPASTE_TARBALL
 ARG APP_PATH
 
 ENV EXCLUDE_MODS="\
@@ -31,7 +32,7 @@ ENV REMOVE_FILES=".dockerignore \
 
 WORKDIR ${APP_PATH}
 
-RUN wget -qO dpaste.tar.gz https://api.github.com/repos/bartTC/dpaste/tarball/v${DPASTE_VERSION#v*} \
+RUN wget -qO dpaste.tar.gz ${DPASTE_TARBALL} \
 	&& tar -xf dpaste.tar.gz --strip-components 1 \
 	&& rm -f dpaste.tar.gz \
 	&& for dep in $EXCLUDE_MODS; do \

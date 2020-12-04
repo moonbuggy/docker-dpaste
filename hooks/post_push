@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+. hooks/env
+
+latest=$DPASTE_LATEST_VERSION
+
+. hooks/post_push.inc
+
+tags+=( "${image_tag}" "v${image_tag}" )
+
+push_tags

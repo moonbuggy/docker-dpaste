@@ -1,0 +1,37 @@
+echo '=========='
+echo 'env'
+
+latest_tag_data=$(curl -s https://api.github.com/repos/bartTC/dpaste/releases/latest | awk '/.*(tag_name|tarball_url).*/ {print}')
+DPASTE_LATEST_VERSION=$(echo $latest_tag_data | sed -r 's/.*tag_name"\W+"v?([^"]+)".*/\1/')
+
+get_tag_data () {
+	tag_data=$( curl -s -w "%{http_code}\n" "https://api.github.com/repos/bartTC/dpaste/releases/${1}" )
+	http_code=$(echo "$tag_data" | tail -n1)
+	if [ "$http_code" != "200" ]; then
+		tag_data=''
+		return 1
+	fi
+	tag_data=$(echo "$tag_data"	| awk '/.*(tag_name|tarball_url).*/ {print}')
+}
+
+## get version and tarball URL for dpaste
+#
+if [ "$DOCKER_TAG" = "latest" ]; then
+	tag_data=$latest_tag_data
+else
+	get_tag_data "tags/v${DOCKER_TAG}" \
+		|| get_tag_data "tags/${DOCKER_TAG}" \
+		|| get_tag_data "tags/${DOCKER_TAG#v*}"
+fi
+
+if [ -z "${tag_data}" ]; then
+	echo "Error: Could not match tag '${DOCKER_TAG}' with the Git repo."
+	exit 1
+fi
+
+DPASTE_VERSION=$(echo $tag_data | sed -r 's/.*tag_name"\W+"v?([^"]+)".*/\1/')
+DPASTE_TARBALL=$(echo $tag_data | sed -r 's/.*tarball_url"\W+"([^"]+)".*/\1/')
+
+echo "dpaste: ${DPASTE_VERSION} - ${DPASTE_TARBALL}"
+echo "latest dpaste: ${DPASTE_LATEST_VERSION}"
+echo '=========='

@@ -16,4 +16,3 @@ virtualenv      = ${VIRTUAL_ENV}/lib/python${PYTHON_VERSION}/site-packages
 EOF
 
 sed -E -i -e '/^\s*client_body_buffer_size/d' -e '/.*location\s\/\s\{/a\\t\tclient_body_buffer_size 64k;' /etc/nginx/conf.d/default.conf
-
