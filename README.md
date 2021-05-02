@@ -5,7 +5,7 @@
 ## Usage
 
 ```
-docker run --name dpaste -d -p 8080:8080 moonbuggy2000/dpaste
+docker run --name dpaste -d -p 8080:8080 moonbuggy2000/dpaste:latest
 ```
 
 ### Environment variables
@@ -43,3 +43,9 @@ Accepted values for this variable are:
 If you wish to manually configure settings you can create a volume at `/app/dpaste/settings/`.
 
 If you're using the SQLite database you'll want to persist the database file by mounting either the folder or the file at `/app/db/database.sqlite3`.
+
+## Links
+
+GitHub: https://github.com/moonbuggy/docker-dpaste
+
+Docker Hub: https://hub.docker.com/r/moonbuggy2000/dpaste
